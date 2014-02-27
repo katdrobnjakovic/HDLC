@@ -137,8 +137,7 @@ class PhysicalLayerServer
 				for (i=0;i<clientCount;i++) {
 
 					// ==============================================================
-					// insert codes here to send “RR,*,P” msg     		
-
+					sendRR();// insert codes here to send “RR,*,P” msg
 					System.out.println("Sent < RR,*,P > to station " + clientID[i]);
 					// ==============================================================
 
@@ -157,12 +156,17 @@ class PhysicalLayerServer
 						}
 						else if(response.substring(0, 1).equals("0")) {
 							// ==============================================================
-							// insert codes here to handle the frame “I, *, *” received
+							handleFrame();// insert codes here to handle the frame “I, *, *” received
 
 
-							//if the frame is to the primary station; consume it        					
-
-							//if the frame is to the secondary station; buffer the frame to send
+							//Check destination: 					
+							if(checkIfToPrimary())//if the frame is to the primary station; consume it 
+							{
+							//TODO: PROCESS THE FRAME
+							}
+							else{//if the frame is to the secondary station; buffer the frame to send
+							//TODO:Send to appropriate secondary station:
+							}
 
 
 							// ==============================================================
@@ -189,6 +193,21 @@ class PhysicalLayerServer
 			e1.printStackTrace();
 		}
 
+	}
+
+	private static void handleFrame() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static boolean checkIfToPrimary() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private static void sendRR() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

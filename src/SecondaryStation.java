@@ -9,6 +9,9 @@ import java.net.UnknownHostException;
 
 class SecondaryStation 
 {
+	private static String host = "localhost";
+	private static int port = 4444;
+	
 	public static void main(String args[])
 	{
 		Socket clientSocket = null;
@@ -28,11 +31,11 @@ class SecondaryStation
 
 		String answer = null; // input using keyboard
 
-		//Initialization section:
+		//Initialization:
 		//Try to open a socket on port 4444
 		//Try to open input and output streams
 		try {
-			clientSocket = new Socket("127.0.0.1", 4444);
+			clientSocket = new Socket(host, port);
 			printStream = new PrintStream(clientSocket.getOutputStream());
 			inputStream = new DataInputStream(clientSocket.getInputStream());
 		} 
@@ -60,7 +63,7 @@ class SecondaryStation
 				// recv SNRM msg
 				if(response.equals("11000001") || response.equals("11001001")) {
 					//===========================================================
-					// insert codes here to send the UA msg					
+					sendUA();// insert codes here to send the UA msg	
 					//===========================================================
 					System.out.println("sent UA msg");
 				}
@@ -88,14 +91,14 @@ class SecondaryStation
 
 							//===========================================================
 							// insert codes here to send an I msg;
-
+							sendIMsg();
 							//===========================================================
 
 						}				
 						else {
 							//===========================================================
 							// insert codes here to send ??RR,*,F??
-
+							
 							//===========================================================
 						}
 					}
@@ -119,5 +122,15 @@ class SecondaryStation
 			}	
 		}
 
+	}
+
+	private static void sendIMsg() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void sendUA() {
+		// TODO Auto-generated method stub
+		
 	}
 }
