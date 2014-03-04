@@ -37,7 +37,6 @@ class SecondaryStation
 		//Try to open input and output streams
 		try {
 			clientSocket = new Socket(host, port);
-			//printWriter = new PrintStream(clientSocket.getOutputStream());
 			inputStream = new DataInputStream(clientSocket.getInputStream());
 			outputStream = new DataOutputStream(clientSocket.getOutputStream());
 		} 
@@ -60,11 +59,12 @@ class SecondaryStation
 				System.out.println("client address: " + id);
 
 				responseLine = inputStream.readUTF();
-				response = responseLine.substring(16, 24);//Control Section
+				//response = responseLine.substring(16, 24);//Control Section
 				
 				String msg = "";
-				//receive SNRM Message TODO
-				checkIfResetMsg(response, outputStream, msg);// insert codes here to send the UA msg	
+				
+				//receive SNRM Message TODO check whether SNRM codes are correct
+				checkIfResetMsg(responseLine, outputStream, msg);// insert codes here to send the UA msg	
 
 
 				// main loop; recv and send data msgs
@@ -150,4 +150,15 @@ class SecondaryStation
 		}
 
 	}
+	
+	//Checks whether the currently received frame is to be rejected or processed (introduces error) 
+	//Returns true if the current frame should be accepted and processed, returns false if the current frame should be ignored.
+	boolean accept()
+	{
+		
+		
+	return true;//change	
+	}
+	
+	
 }
