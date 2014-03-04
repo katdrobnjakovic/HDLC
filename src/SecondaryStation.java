@@ -11,12 +11,13 @@ class SecondaryStation
 {
 	private static String host = "localhost";
 	private static int port = 4444;
-	
+
 	public static void main(String args[])
 	{
 		Socket clientSocket = null;
-		PrintStream printStream = null;
+		//PrintStream printWriter = null;
 		DataInputStream inputStream = null;
+		DataOutputStream outputStream = null;
 
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -36,8 +37,9 @@ class SecondaryStation
 		//Try to open input and output streams
 		try {
 			clientSocket = new Socket(host, port);
-			printStream = new PrintStream(clientSocket.getOutputStream());
+			//printWriter = new PrintStream(clientSocket.getOutputStream());
 			inputStream = new DataInputStream(clientSocket.getInputStream());
+			outputStream = new DataOutputStream(clientSocket.getOutputStream());
 		} 
 		catch (UnknownHostException e) {
 			System.err.println("Don't know about host: hostname");
@@ -46,31 +48,28 @@ class SecondaryStation
 			System.err.println("Couldn't get I/O for the connection to: hostname");
 		}
 
-		if (clientSocket != null && printStream != null && inputStream != null) {			
+		if (clientSocket != null && outputStream != null && inputStream != null) {			
 
 			try {				
 
 				String responseLine;				
-				responseLine = inputStream.readLine();
+				responseLine = inputStream.readUTF();
 
 				//receive client address from the primary station
 				id = responseLine;
 				System.out.println("client address: " + id);
 
-				responseLine = inputStream.readLine();
-				response = responseLine.substring(16, 24);
+				responseLine = inputStream.readUTF();
+				response = responseLine.substring(16, 24);//Control Section
+				
+				String msg = "";
+				//receive SNRM Message TODO
+				checkIfResetMsg(response, outputStream, msg);// insert codes here to send the UA msg	
 
-				// recv SNRM msg
-				if(response.equals("11000001") || response.equals("11001001")) {
-					//===========================================================
-					sendUA();// insert codes here to send the UA msg	
-					//===========================================================
-					System.out.println("sent UA msg");
-				}
 
 				// main loop; recv and send data msgs
 				while (true) {
-					responseLine = inputStream.readLine();
+					responseLine = inputStream.readUTF();
 					response = responseLine.substring(16, 24);
 
 					System.out.println("recv msg -- control " + response);				
@@ -98,7 +97,7 @@ class SecondaryStation
 						else {
 							//===========================================================
 							// insert codes here to send ??RR,*,F??
-							
+
 							//===========================================================
 						}
 					}
@@ -126,11 +125,29 @@ class SecondaryStation
 
 	private static void sendIMsg() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	private static void sendUA() {
-		// TODO Auto-generated method stub
-		
+	//Checks whether the incoming message is reset code and requires 
+	private static void checkIfResetMsg(String response, DataOutputStream outputStream, String message) {
+
+		try {
+			// recv SNRM msg
+			if(response.equals("11000001") || response.equals("11001001")) //RESET codes
+			{
+				String msg ="";
+				//===========================================================
+				
+				outputStream.writeUTF("");//TODO
+
+				//===========================================================
+				System.out.println("sent UA msg");
+
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }
