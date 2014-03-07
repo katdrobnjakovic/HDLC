@@ -23,10 +23,8 @@ class PhysicalLayerServer
 	
 	public static void main(String args[])
 	{
-
 		// sockets and other variables declaration
 		// maximum number of clients connected: 10                    ASSUMPTION
-
 		ServerSocket serverSocket = null;
 		Socket[] clientSockets;
 		clientSockets = new Socket[10];
@@ -44,9 +42,7 @@ class PhysicalLayerServer
 
 		boolean bListening = true;
 
-		boolean bAlive = false;
-	
-		int i = 0;       
+		boolean bAlive = false;    
 
 		// create server socket
 		try {
@@ -63,15 +59,21 @@ class PhysicalLayerServer
 
 					// trying to listen to the socket to accept clients
 					// if there is nobody to connect, exception will be thrown - set by setSoTimeout()
+					try{
+						System.out.println("Searching for new clients...");
 					clientSockets[clientCount]=serverSocket.accept();
-					System.out.println("Found Client");
+					} catch (Exception e)
+					{
+						System.out.println("No new clients found.");
+					}
+					
 					// connection got accepted
 					if (clientSockets[clientCount]!=null){
 
 						System.out.println("Connection from " + clientSockets[clientCount].getInetAddress() + " accepted.");
 
 						System.out.println("accepted client");
-						//printWriter[clientCount] = new PrintWriter(clientSockets[clientCount].getOutputStream());
+					
 						outputStream[clientCount] = new DataOutputStream(clientSockets[clientCount].getOutputStream());
 						inputStream = new DataInputStream [10];
 						inputStream[clientCount] = new DataInputStream(clientSockets[clientCount].getInputStream());
@@ -112,7 +114,7 @@ class PhysicalLayerServer
 					e.printStackTrace();
 				}
 
-				for (i=0;i<clientCount;i++) {
+				for (int i=0;i<clientCount;i++) {
 
 					// ==============================================================
 					// insert codes here to send RR,*,P msg
@@ -140,19 +142,20 @@ class PhysicalLayerServer
 							//Check destination: 					
 							if(checkIfToPrimary(inputLine))//if the frame is to the primary station; consume it 
 							{
-								//TODO: PROCESS THE FRAME
 								//prints the information part of the frame
 								System.out.println(inputLine.substring(24, inputLine.length()-24).toString()); 
 							}
-							else{//if the frame is to the secondary station; buffer the frame to send
-								if(address[clientCount].equals(inputLine.substring(8, 15)))
+							else{//if the frame is to a secondary station; buffer the frame to send
+								
+								for(int i2 = 0; i2 < clientCount; i2++)
 								{
+									if(address[i2].equals(inputLine.substring(8, 15)))
+											{
 									outputStream[clientCount].writeUTF(inputLine);
+											}
 								}
 								
 							}
-
-
 							// ==============================================================
 						}
 					}
@@ -160,13 +163,13 @@ class PhysicalLayerServer
 
 				// ==============================================================
 				// insert codes here to send frames in the buffer   
-				outputStream[clientCount].writeUTF(inputLine);
+				//outputStream[clientCount].writeUTF(inputLine);
 
 				// send I frame
-				if(control.substring( 0, 1).equals("0"))
-				{
-					outputStream[clientCount].writeUTF(inputLine);
-				}
+//				if(control.substring( 0, 1).equals("0"))
+//				{
+//					outputStream[clientCount].writeUTF(inputLine);
+//				}
 
 				// ==============================================================
 
@@ -207,7 +210,7 @@ class PhysicalLayerServer
 		String data = inputLine.substring(24, inputLine.length()-8);
 		System.out.println("");
 		System.out.println("Received data: " + data);						
-
+		control = inputLine.substring(16, 24);
 		nr = Integer.parseInt(control.substring(1,4), 2) + 1;
 		System.out.println("nr: " + nr);
 

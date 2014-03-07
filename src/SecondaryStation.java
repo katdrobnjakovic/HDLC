@@ -19,12 +19,8 @@ public class SecondaryStation {
 		String response = null; // control field of the socket input
 		int nr = 0; //receive sequence number
 		
-		//
 		String answer = null; // input using keyboard
-		//
 		
-       
-        //		
 //		 Initialization section:
 //		 Try to open a socket on port 4444
 //		 Try to open input and output streams
