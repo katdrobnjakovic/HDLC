@@ -4,9 +4,7 @@ import java.io.*;
 public class SecondaryStation {
 	
 	public static void main(String[] args) {
-//		 declaration section:
-//		 os: output stream
-//		 is: input stream
+		
 		Socket clientSocket = null;
 		DataOutputStream os = null;
 		DataInputStream is = null;
@@ -21,9 +19,6 @@ public class SecondaryStation {
 		
 		String answer = null; // input using keyboard
 		
-//		 Initialization section:
-//		 Try to open a socket on port 4444
-//		 Try to open input and output streams
 		try {
 			clientSocket = new Socket("localhost", 2732);
 			os =  new DataOutputStream(clientSocket.getOutputStream());
@@ -44,7 +39,6 @@ public class SecondaryStation {
 				responseLine = is.readUTF();
 				
 				//receive client address from the primary station
-				//
 				id = responseLine;
 				System.out.println("client address: " + id);
 				
@@ -53,8 +47,9 @@ public class SecondaryStation {
 
 				// recv SNRM msg
 				if(response.equals("11000001") || response.equals("11001001")) {
+					
 					//===========================================================
-					// insert codes here to send the UA msg		
+					//Send the UA msg		
 					System.out.println("SNRM received");
 					 String controlUA = "11000110";
 					String msg = flag + "00000000" + controlUA + "" + flag; // return message is start + primaryAddress + UA control code + (Info = 0) + end
@@ -63,7 +58,7 @@ public class SecondaryStation {
 					System.out.println("sent UA msg");
 				}
 				
-				// main loop; recv and send data msgs
+				//Receive and send data msgs
 				while (true) {
 					responseLine = is.readUTF();
 					response = responseLine.substring(16, 24);
@@ -71,7 +66,7 @@ public class SecondaryStation {
 					System.out.println("recv msg -- control " + response);				
 					
 					// recv ??RR,*,P?? msg
-					if(response.substring(0,5).equals("10001")) {//RNR
+					if(response.substring(0,5).equals("10001")) {
 						
 						// enter data msg using keyboard 
 						System.out.println("Is there any message to send? (y/n)");
@@ -79,7 +74,7 @@ public class SecondaryStation {
 						
 						if(answer.toLowerCase().equals("y") || answer.toLowerCase().equals("yes")) {
 							System.out.println("Please enter the destination address using 8-bits binary string (e.g. 00000001):");
-							address = in.readLine();
+							String recipient = in.readLine();
 							
 							System.out.println("Please enter the message to send?");
 							answer = in.readLine();
@@ -87,7 +82,7 @@ public class SecondaryStation {
 							//===========================================================
 							// insert codes here to send an I msg;
 							
-							String msg = flag  + address + "00000000" + answer + flag;
+							String msg = flag  + recipient + "00000000" + answer + flag;
 							os.writeUTF(msg);
 							
 							//===========================================================
@@ -98,9 +93,8 @@ public class SecondaryStation {
 							// insert codes here to send ??RR,*,F??
 							System.out.println("Sending RR.");
 							String controlRR = "10000";
-							String msg = flag + address + controlRR + "000" + "" + flag; //TODO
-							
-								os.writeUTF(msg);
+							String msg = flag + "00000000" + controlRR + "000" + flag;//TODO ACK
+							os.writeUTF(msg);
 							
 							//===========================================================
 						}

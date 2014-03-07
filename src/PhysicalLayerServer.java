@@ -50,7 +50,7 @@ class PhysicalLayerServer
 			serverSocket = new ServerSocket(nPort);
 			
 			// set timeout on the socket so the program does not hang up
-			serverSocket.setSoTimeout(10000);
+			serverSocket.setSoTimeout(1000);
 
 			// main server loop
 			while (bListening){
@@ -75,12 +75,19 @@ class PhysicalLayerServer
 						System.out.println("accepted client");
 					
 						outputStream[clientCount] = new DataOutputStream(clientSockets[clientCount].getOutputStream());
-						inputStream = new DataInputStream [10];
+						
 						inputStream[clientCount] = new DataInputStream(clientSockets[clientCount].getInputStream());
 
 						clientID[clientCount] = clientCount+1;		
+						
+						address[clientCount] = Integer.toBinaryString(clientID[clientCount]);
+						
+						//Pad the address with more or less 0s to get eight in total
+						for(int i = 0; address[clientCount].length() <= 8; i++)
+						{
+							address[clientCount] = "0" + address[clientCount];
+						}
 
-						address[clientCount] = "00000000"+Integer.toBinaryString(clientID[clientCount]);
 						int len = address[clientCount].length();					
 						address[clientCount] = address[clientCount].substring(len-8);				
 
@@ -114,12 +121,12 @@ class PhysicalLayerServer
 					e.printStackTrace();
 				}
 
-				for (int i=0;i<clientCount;i++) {
+				for (int i=0; i<clientCount; i++) {
 
 					// ==============================================================
 					// insert codes here to send RR,*,P msg
 					System.out.println("Sent < RR,*,P > to station" + clientID[i]);
-					outputStream[i].writeUTF(flag + "00000001" + "10001" + "000" + flag);
+					outputStream[i].writeUTF(flag + address[clientCount	- 1] + "10001" + "000" + flag);
 					// ==============================================================
 					
 					// recv response from the client
@@ -149,9 +156,10 @@ class PhysicalLayerServer
 								
 								for(int i2 = 0; i2 < clientCount; i2++)
 								{
-									if(address[i2].equals(inputLine.substring(8, 15)))
+									if(address[i2].equals(inputLine.substring(8, 16)))
 											{
-									outputStream[clientCount].writeUTF(inputLine);
+												outputStream[i2].writeUTF(inputLine);
+												break;
 											}
 								}
 								
@@ -163,9 +171,9 @@ class PhysicalLayerServer
 
 				// ==============================================================
 				// insert codes here to send frames in the buffer   
-				//outputStream[clientCount].writeUTF(inputLine);
-
-				// send I frame
+//				outputStream[clientCount].writeUTF(inputLine);
+//
+//				// send I frame
 //				if(control.substring( 0, 1).equals("0"))
 //				{
 //					outputStream[clientCount].writeUTF(inputLine);
