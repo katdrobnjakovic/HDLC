@@ -30,9 +30,6 @@ class PhysicalLayerServer
 		ServerSocket serverSocket = null;
 		Socket[] clientSockets;
 		clientSockets = new Socket[10];
-	
-	
-
 
 		int[] ns; // send sequence number
 		ns = new int[10];
@@ -40,30 +37,14 @@ class PhysicalLayerServer
 		int[] nr; // receive sequence number
 		nr = new int[10];
 
-	
-		String outputLine = null;
-
 		//get port number from the command line
 		int nPort = 2732; // default port number        
 
 		String flag = "01111110";
 
-	
-
-		
-		String information = "";
-
 		boolean bListening = true;
 
-		String[] sMessages; // frame buffer
-		sMessages = new String[20];
-		int nMsg = 0;        
-
-
 		boolean bAlive = false;
-
-
-		// initialize some var's to handle the array of clients
 	
 		int i = 0;       
 
@@ -71,12 +52,9 @@ class PhysicalLayerServer
 		try {
 			
 			serverSocket = new ServerSocket(nPort);
-			serverSocket.setSoTimeout(10000);
-			// this variable defines how many clients are connected
-			int nClient = 0;
-
+			
 			// set timeout on the socket so the program does not hang up
-			//serverSocket.setSoTimeout(1000);
+			serverSocket.setSoTimeout(10000);
 
 			// main server loop
 			while (bListening){
@@ -108,8 +86,6 @@ class PhysicalLayerServer
 
 						// send client address to the new client
 						outputStream[clientCount].writeUTF(address[clientCount]);
-						//printWriter[clientCount].println(address[clientCount]);
-
 
 						// ===========================================================
 						// insert codes here to send SNRM message
@@ -121,16 +97,7 @@ class PhysicalLayerServer
 						// ===============================================================
 
 						// Receive UA message
-						//receiveUA();
-						inputLine = inputStream[clientCount].readUTF(); 
-						String response = inputLine.substring(16, 24);
-
-						if(response.equals("11000110") || response.equals("11001110")) {
-							System.out.println("Received UA from station " + clientID[clientCount]);
-						}
-						else {
-							System.out.println("UA error -- station " + clientID[clientCount]);
-						}  
+						receiveUA();
 
 						// initialize ns and nr
 						ns[clientCount] = -1;
@@ -138,7 +105,6 @@ class PhysicalLayerServer
 
 						// increment count of clients
 						clientCount++;
-						nClient = clientCount;
 						bAlive = true;
 					}
 				}
@@ -223,7 +189,6 @@ class PhysicalLayerServer
 		try {
 			inputLine = inputStream[clientCount].readUTF();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String response = inputLine.substring(16, 24);
