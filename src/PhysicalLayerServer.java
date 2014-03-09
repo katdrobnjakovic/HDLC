@@ -83,7 +83,7 @@ class PhysicalLayerServer
 						address[clientCount] = Integer.toBinaryString(clientID[clientCount]);
 						
 						//Pad the address with more or less 0s to get eight in total
-						for(int i = 0; address[clientCount].length() <= 8; i++)
+						while( address[clientCount].length() < 8 )
 						{
 							address[clientCount] = "0" + address[clientCount];
 						}
