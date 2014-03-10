@@ -237,6 +237,10 @@ public class SecondaryStation {
 								else
 								{
 									allReceived = true; 
+									System.out.println("Sending RR.");
+									String controlRR = "10000";
+									String msg = flag + "00000000" + controlRR + "000" + flag;//TODO ACK
+									os.writeUTF(msg);
 									break;
 								}
 							}
